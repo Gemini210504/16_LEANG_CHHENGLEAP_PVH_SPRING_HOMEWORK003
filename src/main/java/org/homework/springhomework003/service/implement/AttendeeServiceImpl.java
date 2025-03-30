@@ -1,5 +1,8 @@
 package org.homework.springhomework003.service.implement;
 
+import org.apache.ibatis.jdbc.Null;
+import org.homework.springhomework003.exception.NotFoundException;
+import org.homework.springhomework003.exception.WrongInputException;
 import org.homework.springhomework003.model.entity.Attendee;
 import org.homework.springhomework003.model.dto.request.AttendeeRequest;
 import org.homework.springhomework003.repository.AttendeeRepository;
@@ -8,9 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
 @Service
 public class AttendeeServiceImpl implements AttendeeService {
+
     private final AttendeeRepository attendeeRepository;
 
     public AttendeeServiceImpl(AttendeeRepository attendeeRepository) {
@@ -19,17 +22,31 @@ public class AttendeeServiceImpl implements AttendeeService {
 
     @Override
     public Attendee getAttendeeById(Integer id) {
-        return attendeeRepository.getAttendeeById(id);
+        Attendee attendee = attendeeRepository.getAttendeeById(id);
+        if (attendee == null) {
+            throw new NotFoundException("Attendee with ID " + id + " not found");
+        }
+        return attendee;
     }
 
     @Override
     public Attendee updateAttendeeById(AttendeeRequest attendeeRequest, Integer id) {
-        return attendeeRepository.updateAttendeeById(attendeeRequest,id);
+        Attendee existingAttendee = attendeeRepository.getAttendeeById(id);
+        if (existingAttendee == null) {
+            throw new NotFoundException("Attendee with ID " + id + " not found");
+        }
+
+        return attendeeRepository.updateAttendeeById(attendeeRequest, id);
     }
 
     @Override
     public Attendee deleteAttendeeById(Integer id) {
-        return attendeeRepository.deleteAttendeeById(id);
+        Attendee attendee = attendeeRepository.getAttendeeById(id);
+        if (attendee == null) {
+            throw new NotFoundException("Attendee with ID " + id + " not found");
+        }
+        attendeeRepository.deleteAttendeeById(id);
+        return attendee;
     }
 
     @Override
@@ -39,6 +56,29 @@ public class AttendeeServiceImpl implements AttendeeService {
 
     @Override
     public Attendee addAttendee(AttendeeRequest attendeeRequest) {
+        if (attendeeRequest.getEmail() == null || attendeeRequest.getEmail().trim().equals("")) {
+            throw new WrongInputException("Email is required");
+        }
+
+        if (attendeeRequest.getAttendeeName()== null || attendeeRequest.getAttendeeName().trim().equals("")) {
+            throw new WrongInputException("Name is required");
+        }
+        String trimmedEmail = attendeeRequest.getEmail().trim();
+        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        if (!trimmedEmail.matches(emailRegex)) {
+            throw new WrongInputException("Email is in wrong format");
+        }
+
+        int existingEmailCount = attendeeRepository.countByEmail(trimmedEmail);
+        if (existingEmailCount > 0) {
+            throw new WrongInputException("Email is already in use");
+        }
+
+        Attendee attendee = new Attendee();
+        attendee.setAttendeeName(attendeeRequest.getAttendeeName());
+        attendee.setEmail(trimmedEmail);
+
         return attendeeRepository.insertAttendee(attendeeRequest);
     }
+
 }

@@ -7,12 +7,15 @@ import lombok.NoArgsConstructor;
 import org.homework.springhomework003.model.entity.Attendee;
 import org.homework.springhomework003.model.entity.Venue;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class EventRequest {
     private String eventName;
-    private String eventDate;
-    private Venue venueId;
-    private Attendee attendee;
+    private LocalDateTime eventDate;
+    private Integer venueId;
+    private List<Integer> attendeeId;
 }

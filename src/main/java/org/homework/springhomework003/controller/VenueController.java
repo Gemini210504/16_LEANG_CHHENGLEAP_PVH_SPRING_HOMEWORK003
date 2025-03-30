@@ -1,7 +1,7 @@
 package org.homework.springhomework003.controller;
 
-import org.homework.springhomework003.exception.NotFoundException;
-import org.homework.springhomework003.model.entity.Attendee;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.homework.springhomework003.model.entity.Venue;
 import org.homework.springhomework003.model.dto.request.VenueRequest;
 import org.homework.springhomework003.model.dto.response.ApiResponse;
@@ -15,84 +15,77 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/venues")
+@RequiredArgsConstructor
 public class VenueController {
+
     private final VenueService venueService;
 
-    public VenueController(VenueService venueService) {
-        this.venueService = venueService;
-    }
 
     @GetMapping("/{venue-id}")
-    ResponseEntity<ApiResponse<Venue>> getVenueById(@PathVariable("venue-id") Integer id){
+    public ResponseEntity<ApiResponse<Venue>> getVenueById(@PathVariable("venue-id") Integer id) {
         Venue venue = venueService.getVenueById(id);
-        if(venue == null){
-            throw new NotFoundException("Venue id ["+id+"] not found");
-        }
         ApiResponse<Venue> response = ApiResponse.<Venue>builder()
-                .message("Get venue by Id ["+id+"] success")
+                .message("Get venue by Id [" + id + "] success")
                 .status(HttpStatus.OK)
-                .payload(venueService.getVenueById(id))
+                .payload(venue)
                 .success(true)
                 .timeStamp(LocalDateTime.now())
                 .build();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
+
     @PutMapping("/{venue-id}")
-    ResponseEntity<ApiResponse<Venue>> updateVenueById(@RequestBody VenueRequest venueRequest, @PathVariable("venue-id") Integer id){
-        Venue venue = venueService.getVenueById(id);
-        if(venue == null){
-            throw new NotFoundException("Venue id ["+id+"] not found");
-        }
+    public ResponseEntity<ApiResponse<Venue>> updateVenueById(@Valid @RequestBody VenueRequest venueRequest,
+                                                              @PathVariable("venue-id") Integer id) {
+        Venue updatedVenue = venueService.updateVenueById(venueRequest, id);
         ApiResponse<Venue> response = ApiResponse.<Venue>builder()
-                .message("Update venue by Id success")
+                .message("Update venue by Id [" + id + "] success")
                 .status(HttpStatus.OK)
-                .payload(venueService.updateVenueById(venueRequest, id))
+                .payload(updatedVenue)
                 .success(true)
                 .timeStamp(LocalDateTime.now())
                 .build();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{venue-id}")
-    ResponseEntity<ApiResponse<Venue>> deleteVenueById(@PathVariable("venue-id") Integer id){
-        Venue venue = venueService.getVenueById(id);
-        if(venue == null){
-            throw new NotFoundException("Venue id "+id+" not found");
-        }
+    public ResponseEntity<ApiResponse<Venue>> deleteVenueById(@PathVariable("venue-id") Integer id) {
+        Venue deletedVenue = venueService.deleteVenueById(id);
         ApiResponse<Venue> response = ApiResponse.<Venue>builder()
-                .message("Delete venue by Id success")
+                .message("Delete venue by Id [" + id + "] success")
                 .status(HttpStatus.OK)
-                .payload(venueService.deleteVenueById(id))
+                .payload(deletedVenue)
                 .success(true)
                 .timeStamp(LocalDateTime.now())
                 .build();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<List<Venue>>> getAllVenue(Integer page, Integer size){
-
+    public ResponseEntity<ApiResponse<List<Venue>>> getAllVenues(@RequestParam(defaultValue = "1") Integer page,
+                                                                 @RequestParam(defaultValue = "10") Integer size) {
+        List<Venue> venues = venueService.getAllVenue(page, size);
         ApiResponse<List<Venue>> response = ApiResponse.<List<Venue>>builder()
-                .message("Get all venue success")
+                .message("Get all venues success")
                 .status(HttpStatus.OK)
-                .payload(venueService.getAllVenue(page,size))
+                .payload(venues)
                 .success(true)
                 .timeStamp(LocalDateTime.now())
                 .build();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    ResponseEntity<ApiResponse<Venue>> addVenue(@RequestBody VenueRequest venueRequest){
+    public ResponseEntity<ApiResponse<Venue>> addVenue(@Valid @RequestBody VenueRequest venueRequest) {
+        Venue newVenue = venueService.addVenue(venueRequest);
         ApiResponse<Venue> response = ApiResponse.<Venue>builder()
-                .message("Add event success")
+                .message("Add venue success")
                 .status(HttpStatus.CREATED)
-                .payload(venueService.addVenue(venueRequest))
+                .payload(newVenue)
                 .success(true)
                 .timeStamp(LocalDateTime.now())
                 .build();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
 }

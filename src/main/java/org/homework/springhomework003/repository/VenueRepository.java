@@ -38,5 +38,4 @@ public interface VenueRepository {
     public Venue insertVenue(@Param("request") VenueRequest venueRequest);
 
 
-
 }

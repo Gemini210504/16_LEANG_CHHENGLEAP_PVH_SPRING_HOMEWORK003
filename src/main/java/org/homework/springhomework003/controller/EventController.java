@@ -1,10 +1,10 @@
 package org.homework.springhomework003.controller;
 
-
-import org.homework.springhomework003.exception.NotFoundException;
-import org.homework.springhomework003.model.entity.Event;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.homework.springhomework003.model.dto.request.EventRequest;
 import org.homework.springhomework003.model.dto.response.ApiResponse;
+import org.homework.springhomework003.model.entity.Event;
 import org.homework.springhomework003.service.EventService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,77 +15,74 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/events")
+@RequiredArgsConstructor
 public class EventController {
+
     private final EventService eventService;
 
-    public EventController(EventService eventService) {
-        this.eventService = eventService;
-    }
-
-
     @GetMapping("/{event-id}")
-    ResponseEntity<ApiResponse<Event>> getEventById(@PathVariable("event-id") Integer id){
+    public ResponseEntity<ApiResponse<Event>> getEventById(@PathVariable("event-id") Integer id) {
+        Event event = eventService.getEventById(id);
         ApiResponse<Event> response = ApiResponse.<Event>builder()
-                .message("Get event by Id success")
+                .message("Get event by Id [" + id + "] success")
                 .status(HttpStatus.OK)
-//                .payload()
+                .payload(event)
                 .success(true)
                 .timeStamp(LocalDateTime.now())
                 .build();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{event-id}")
-    ResponseEntity<ApiResponse<Event>> updateEventById(@RequestBody EventRequest eventRequest, @PathVariable("event-id") Integer id){
+    public ResponseEntity<ApiResponse<Event>> updateEventById(@Valid @RequestBody EventRequest eventRequest, @PathVariable("event-id") Integer id) {
+        Event updatedEvent = eventService.updateEventById(eventRequest, id);
         ApiResponse<Event> response = ApiResponse.<Event>builder()
-                .message("Update event by Id success")
+                .message("Update event by Id [" + id + "] success")
                 .status(HttpStatus.OK)
-//                .payload()
+                .payload(updatedEvent)
                 .success(true)
                 .timeStamp(LocalDateTime.now())
                 .build();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{event-id}")
-    ResponseEntity<ApiResponse<Event>> deleteEventById(@PathVariable("event-id") Integer id){
+    public ResponseEntity<ApiResponse<Event>> deleteEventById(@PathVariable("event-id") Integer id) {
+        Event deletedEvent = eventService.deleteEventById(id);
         ApiResponse<Event> response = ApiResponse.<Event>builder()
-                .message("Delete event by Id success")
+                .message("Delete event by Id [" + id + "] success")
                 .status(HttpStatus.OK)
-//                .payload()
+                .payload(deletedEvent)
                 .success(true)
                 .timeStamp(LocalDateTime.now())
                 .build();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<List<Event>>> getAllEvent(Integer page, Integer size){
+    public ResponseEntity<ApiResponse<List<Event>>> getAllEvents(@RequestParam(defaultValue = "1") Integer page,
+                                                                 @RequestParam(defaultValue = "10") Integer size) {
         List<Event> events = eventService.getAllEvent(page, size);
-
-        if (events == null || events.isEmpty()) {
-            throw new NotFoundException("Don't have any event");
-        }
-
         ApiResponse<List<Event>> response = ApiResponse.<List<Event>>builder()
-                .message("Get all event success")
+                .message("Get all events success")
                 .status(HttpStatus.OK)
-                .payload(eventService.getAllEvent(page, size))
+                .payload(events)
                 .success(true)
                 .timeStamp(LocalDateTime.now())
                 .build();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    ResponseEntity<ApiResponse<Event>> addEvent(@RequestBody EventRequest eventRequest){
+    public ResponseEntity<ApiResponse<Event>> addEvent(@Valid @RequestBody EventRequest eventRequest) {
+        Event newEvent = eventService.addEvent(eventRequest);
         ApiResponse<Event> response = ApiResponse.<Event>builder()
-                .message("Add event success")
+                .message("Event added successfully")
                 .status(HttpStatus.CREATED)
-//                .payload()
+                .payload(newEvent)
                 .success(true)
                 .timeStamp(LocalDateTime.now())
                 .build();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
