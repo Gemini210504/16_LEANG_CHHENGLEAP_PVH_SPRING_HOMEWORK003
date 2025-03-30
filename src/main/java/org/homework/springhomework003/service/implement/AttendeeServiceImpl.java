@@ -51,24 +51,15 @@ public class AttendeeServiceImpl implements AttendeeService {
 
     @Override
     public List<Attendee> getAllAttendee(Integer page, Integer size) {
+        if (page < 1 || size < 1) {
+            throw new WrongInputException("Page and size should be greater than 0");
+        }
         return attendeeRepository.getAllAttendee(page, size);
     }
 
     @Override
     public Attendee addAttendee(AttendeeRequest attendeeRequest) {
-        if (attendeeRequest.getEmail() == null || attendeeRequest.getEmail().trim().equals("")) {
-            throw new WrongInputException("Email is required");
-        }
-
-        if (attendeeRequest.getAttendeeName()== null || attendeeRequest.getAttendeeName().trim().equals("")) {
-            throw new WrongInputException("Name is required");
-        }
         String trimmedEmail = attendeeRequest.getEmail().trim();
-        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
-        if (!trimmedEmail.matches(emailRegex)) {
-            throw new WrongInputException("Email is in wrong format");
-        }
-
         int existingEmailCount = attendeeRepository.countByEmail(trimmedEmail);
         if (existingEmailCount > 0) {
             throw new WrongInputException("Email is already in use");
@@ -77,7 +68,6 @@ public class AttendeeServiceImpl implements AttendeeService {
         Attendee attendee = new Attendee();
         attendee.setAttendeeName(attendeeRequest.getAttendeeName());
         attendee.setEmail(trimmedEmail);
-
         return attendeeRepository.insertAttendee(attendeeRequest);
     }
 

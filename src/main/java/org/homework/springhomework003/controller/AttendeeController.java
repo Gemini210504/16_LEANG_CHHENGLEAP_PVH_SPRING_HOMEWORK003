@@ -8,6 +8,7 @@ import org.homework.springhomework003.model.dto.response.ApiResponse;
 import org.homework.springhomework003.service.AttendeeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -74,7 +75,7 @@ public class AttendeeController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Attendee>> addAttendee(@RequestBody AttendeeRequest attendeeRequest) {
+    public ResponseEntity<ApiResponse<Attendee>> addAttendee(@Valid @RequestBody AttendeeRequest attendeeRequest) {
         Attendee newAttendee = attendeeService.addAttendee(attendeeRequest);
         ApiResponse<Attendee> response = ApiResponse.<Attendee>builder()
                 .message("Attendee added successfully")

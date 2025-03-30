@@ -1,6 +1,7 @@
 package org.homework.springhomework003.service.implement;
 
 import org.homework.springhomework003.exception.NotFoundException;
+import org.homework.springhomework003.exception.WrongInputException;
 import org.homework.springhomework003.model.entity.Event;
 import org.homework.springhomework003.model.dto.request.EventRequest;
 import org.homework.springhomework003.repository.EventsRepository;
@@ -56,6 +57,9 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<Event> getAllEvent(Integer page, Integer size) {
+        if (page < 1 || size < 1) {
+            throw new WrongInputException("Page and size should be greater than 0");
+        }
         return eventRepository.getAllEvents(page, size);
     }
 
