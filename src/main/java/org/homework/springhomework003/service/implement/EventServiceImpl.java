@@ -2,6 +2,7 @@ package org.homework.springhomework003.service.implement;
 
 import org.homework.springhomework003.exception.NotFoundException;
 import org.homework.springhomework003.exception.WrongInputException;
+import org.homework.springhomework003.model.entity.Attendee;
 import org.homework.springhomework003.model.entity.Event;
 import org.homework.springhomework003.model.dto.request.EventRequest;
 import org.homework.springhomework003.repository.EventsRepository;
@@ -27,17 +28,25 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event getEventById(Integer id) {
         Event event = eventRepository.getEventById(id);
+        if (id <= 0) {
+            throw new WrongInputException("Event ID must be greater than 0");
+        }
         if (event == null) {
             throw new NotFoundException("Event id [" + id + "] not found");
         }
+
         return event;
     }
 
     @Override
     public Event updateEventById(EventRequest eventRequest, Integer id) {
+        if (id <= 0) {
+            throw new WrongInputException("Event ID must be greater than 0");
+        }
         if (venueRepository.getVenueById(eventRequest.getVenueId()) == null) {
             throw new NotFoundException("Venue id [" + eventRequest.getVenueId() + "] not found");
         }
+
 
         if (eventRequest.getAttendeeId() != null) {
             for (Integer attendeeId : eventRequest.getAttendeeId()) {
@@ -52,6 +61,14 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event deleteEventById(Integer id) {
+        Event event = eventRepository.getEventById(id);
+        if (id <= 0) {
+            throw new WrongInputException("Event ID must be greater than 0");
+        }
+        if (event == null) {
+            throw new NotFoundException("Event id [" + id + "] not found");
+        }
+
         return eventRepository.deleteEventById(id);
     }
 
@@ -60,7 +77,11 @@ public class EventServiceImpl implements EventService {
         if (page < 1 || size < 1) {
             throw new WrongInputException("Page and size should be greater than 0");
         }
-        return eventRepository.getAllEvents(page, size);
+        List<Event> events = eventRepository.getAllEvents(page, size);
+        if (events == null || events.isEmpty()) {
+            throw new NotFoundException("No event found");
+        }
+        return events;
     }
 
     @Override

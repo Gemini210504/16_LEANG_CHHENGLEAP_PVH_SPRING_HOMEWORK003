@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 public class AttendeeRequest {
     @NotBlank(message = "Attendee's name cannot be blank")
     private String attendeeName;
+
     @NotBlank(message = "Attendee's email cannot be blank")
-    @Email(message = "Email wrong format")
+    @Email(message = "Email wrong format, please Input again !!!")
     private String email;
 }

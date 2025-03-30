@@ -15,18 +15,18 @@ public interface VenueRepository {
             @Result(property = "venueName", column = "venue_name"),
             @Result(property = "location", column = "location")
     })
-    public Venue getVenueById(@Param("id") Integer id);
+    Venue getVenueById(@Param("id") Integer id);
 
     @Select("UPDATE venues SET " +
             "venue_name = #{request.venueName}, " +
             "location = #{request.location} " +
             "WHERE venue_id = #{id} RETURNING *")
     @ResultMap("venueMapper")
-    public Venue updateVenueById(@Param("id") Integer id, @Param("request") VenueRequest venueRequest);
+    Venue updateVenueById(@Param("id") Integer id, @Param("request") VenueRequest venueRequest);
 
     @Select("DELETE FROM venues WHERE venue_id = #{id} RETURNING *")
     @ResultMap("venueMapper")
-    public Venue deleteVenueById(@Param("id") Integer id);
+    Venue deleteVenueById(@Param("id") Integer id);
 
     @Select("SELECT * FROM venues OFFSET (#{page} - 1) * #{size} LIMIT #{size}")
     @ResultMap("venueMapper")
@@ -35,7 +35,7 @@ public interface VenueRepository {
 
     @Select("INSERT INTO venues (venue_name, location) VALUES (#{request.venueName}, #{request.location}) RETURNING *")
     @ResultMap("venueMapper")
-    public Venue insertVenue(@Param("request") VenueRequest venueRequest);
+    Venue insertVenue(@Param("request") VenueRequest venueRequest);
 
 
 }

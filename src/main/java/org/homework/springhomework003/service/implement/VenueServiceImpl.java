@@ -2,6 +2,7 @@ package org.homework.springhomework003.service.implement;
 
 import org.homework.springhomework003.exception.NotFoundException;
 import org.homework.springhomework003.exception.WrongInputException;
+import org.homework.springhomework003.model.entity.Event;
 import org.homework.springhomework003.model.entity.Venue;
 import org.homework.springhomework003.model.dto.request.VenueRequest;
 import org.homework.springhomework003.repository.VenueRepository;
@@ -21,6 +22,9 @@ public class VenueServiceImpl implements VenueService {
     @Override
     public Venue getVenueById(Integer id) {
         Venue venue = venueRepository.getVenueById(id);
+        if (id <= 0) {
+            throw new WrongInputException("Venue ID must be greater than 0");
+        }
         if (venue == null) {
             throw new NotFoundException("Venue id [" + id + "] not found");
         }
@@ -30,6 +34,9 @@ public class VenueServiceImpl implements VenueService {
     @Override
     public Venue updateVenueById(VenueRequest venueRequest, Integer id) {
         Venue existingVenue = venueRepository.getVenueById(id);
+        if (id <= 0) {
+            throw new WrongInputException("Venue ID must be greater than 0");
+        }
         if (existingVenue == null) {
             throw new NotFoundException("Venue id [" + id + "] not found");
         }
@@ -39,6 +46,9 @@ public class VenueServiceImpl implements VenueService {
     @Override
     public Venue deleteVenueById(Integer id) {
         Venue existingVenue = venueRepository.getVenueById(id);
+        if (id <= 0) {
+            throw new WrongInputException("Venue ID must be greater than 0");
+        }
         if (existingVenue == null) {
             throw new NotFoundException("Venue id [" + id + "] not found");
         }
@@ -50,7 +60,11 @@ public class VenueServiceImpl implements VenueService {
         if (page < 1 || size < 1) {
             throw new WrongInputException("Page and size should be greater than 0");
         }
-        return venueRepository.getAllVenues(page, size);
+        List<Venue> venues = venueRepository.getAllVenues(page, size);
+        if (venues == null || venues.isEmpty()) {
+            throw new NotFoundException("No venue found");
+        }
+        return venues;
     }
 
     @Override

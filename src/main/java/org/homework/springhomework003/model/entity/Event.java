@@ -1,5 +1,7 @@
 package org.homework.springhomework003.model.entity;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Event {
-    private int eventId;
+
+    private Integer eventId;
     private String eventName;
     private LocalDateTime eventDate;
     private Venue venue;

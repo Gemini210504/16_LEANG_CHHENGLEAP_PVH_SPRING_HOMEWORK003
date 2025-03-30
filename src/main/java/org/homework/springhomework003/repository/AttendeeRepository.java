@@ -66,9 +66,10 @@ public interface AttendeeRepository {
     @ResultMap("attendeeMapper")
     List<Attendee> findAttendeesByEventId(@Param("id") Integer id);
 
-    @Insert("""
+    @Select("""
             INSERT INTO event_attendee (event_id, attendee_id)
             VALUES (#{eventId}, #{attendeeId})
+            RETURNING *
             """)
     @ResultMap("attendeeMapper")
     void addAttendees(@Param("eventId") Integer eventId, @Param("attendeeId") Integer attendeeId);

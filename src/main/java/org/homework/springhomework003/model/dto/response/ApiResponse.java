@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 @Builder
 public class ApiResponse <T>{
     private String message;
-    private boolean success;
     private HttpStatus status;
-    private LocalDateTime timeStamp;
     private T payload;
+    private boolean success;
+    private LocalDateTime timeStamp;
 
 }

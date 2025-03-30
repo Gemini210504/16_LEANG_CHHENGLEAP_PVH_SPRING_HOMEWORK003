@@ -1,6 +1,7 @@
 package org.homework.springhomework003.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.homework.springhomework003.model.dto.request.EventRequest;
 import org.homework.springhomework003.model.dto.response.ApiResponse;
@@ -21,7 +22,7 @@ public class EventController {
     private final EventService eventService;
 
     @GetMapping("/{event-id}")
-    public ResponseEntity<ApiResponse<Event>> getEventById(@PathVariable("event-id") Integer id) {
+    public ResponseEntity<ApiResponse<Event>> getEventById(@Valid @PathVariable("event-id") Integer id) {
         Event event = eventService.getEventById(id);
         ApiResponse<Event> response = ApiResponse.<Event>builder()
                 .message("Get event by Id [" + id + "] success")
@@ -34,7 +35,7 @@ public class EventController {
     }
 
     @PutMapping("/{event-id}")
-    public ResponseEntity<ApiResponse<Event>> updateEventById(@Valid @RequestBody EventRequest eventRequest, @PathVariable("event-id") Integer id) {
+    public ResponseEntity<ApiResponse<Event>> updateEventById(@RequestBody @Valid EventRequest eventRequest,  @PathVariable("event-id") Integer id) {
         Event updatedEvent = eventService.updateEventById(eventRequest, id);
         ApiResponse<Event> response = ApiResponse.<Event>builder()
                 .message("Update event by Id [" + id + "] success")
@@ -47,7 +48,7 @@ public class EventController {
     }
 
     @DeleteMapping("/{event-id}")
-    public ResponseEntity<ApiResponse<Event>> deleteEventById(@PathVariable("event-id") Integer id) {
+    public ResponseEntity<ApiResponse<Event>> deleteEventById(@Valid @PathVariable("event-id") Integer id) {
         Event deletedEvent = eventService.deleteEventById(id);
         ApiResponse<Event> response = ApiResponse.<Event>builder()
                 .message("Delete event by Id [" + id + "] success")

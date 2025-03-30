@@ -22,7 +22,7 @@ public class AttendeeController {
     private final AttendeeService attendeeService;
 
     @GetMapping("/{attendee-id}")
-    public ResponseEntity<ApiResponse<Attendee>> getAttendeeById(@PathVariable("attendee-id") Integer id) {
+    public ResponseEntity<ApiResponse<Attendee>> getAttendeeById(@Valid @PathVariable("attendee-id") Integer id) {
         Attendee attendee = attendeeService.getAttendeeById(id);
         ApiResponse<Attendee> response = ApiResponse.<Attendee>builder()
                 .message("Get attendee by Id [" + id + "] success")
@@ -49,11 +49,12 @@ public class AttendeeController {
     }
 
     @DeleteMapping("/{attendee-id}")
-    public ResponseEntity<ApiResponse<Void>> deleteAttendeeById(@PathVariable("attendee-id") Integer id) {
-        attendeeService.deleteAttendeeById(id);
-        ApiResponse<Void> response = ApiResponse.<Void>builder()
+    public ResponseEntity<ApiResponse<Attendee>> deleteAttendeeById(@Valid @PathVariable("attendee-id") Integer id) {
+        Attendee deletedAttendee = attendeeService.deleteAttendeeById(id);
+        ApiResponse<Attendee> response = ApiResponse.<Attendee>builder()
                 .message("Delete attendee by Id [" + id + "] success")
                 .status(HttpStatus.OK)
+                .payload(deletedAttendee)
                 .success(true)
                 .timeStamp(LocalDateTime.now())
                 .build();
@@ -61,7 +62,7 @@ public class AttendeeController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Attendee>>> getAllAttendees(@RequestParam(defaultValue = "1") Integer page,
+    public ResponseEntity<ApiResponse<List<Attendee>>> getAllAttendees(@Valid @RequestParam(defaultValue = "1") Integer page,
                                                                        @RequestParam(defaultValue = "10") Integer size) {
         List<Attendee> attendees = attendeeService.getAllAttendee(page, size);
         ApiResponse<List<Attendee>> response = ApiResponse.<List<Attendee>>builder()

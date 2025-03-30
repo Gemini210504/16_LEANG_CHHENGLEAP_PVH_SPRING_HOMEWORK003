@@ -23,18 +23,26 @@ public class AttendeeServiceImpl implements AttendeeService {
     @Override
     public Attendee getAttendeeById(Integer id) {
         Attendee attendee = attendeeRepository.getAttendeeById(id);
+        if (id <= 0) {
+            throw new WrongInputException("Attendee ID must be greater than 0");
+        }
         if (attendee == null) {
             throw new NotFoundException("Attendee with ID " + id + " not found");
         }
+
         return attendee;
     }
 
     @Override
     public Attendee updateAttendeeById(AttendeeRequest attendeeRequest, Integer id) {
         Attendee existingAttendee = attendeeRepository.getAttendeeById(id);
+        if (id <= 0) {
+            throw new WrongInputException("Attendee ID must be greater than 0");
+        }
         if (existingAttendee == null) {
             throw new NotFoundException("Attendee with ID " + id + " not found");
         }
+
 
         return attendeeRepository.updateAttendeeById(attendeeRequest, id);
     }
@@ -42,9 +50,13 @@ public class AttendeeServiceImpl implements AttendeeService {
     @Override
     public Attendee deleteAttendeeById(Integer id) {
         Attendee attendee = attendeeRepository.getAttendeeById(id);
+        if (id <= 0) {
+            throw new WrongInputException("Attendee ID must be greater than 0");
+        }
         if (attendee == null) {
             throw new NotFoundException("Attendee with ID " + id + " not found");
         }
+
         attendeeRepository.deleteAttendeeById(id);
         return attendee;
     }
@@ -54,8 +66,14 @@ public class AttendeeServiceImpl implements AttendeeService {
         if (page < 1 || size < 1) {
             throw new WrongInputException("Page and size should be greater than 0");
         }
-        return attendeeRepository.getAllAttendee(page, size);
+        List<Attendee> attendees = attendeeRepository.getAllAttendee(page, size);
+        if (attendees == null || attendees.isEmpty()) {
+            throw new NotFoundException("No attendees found");
+        }
+
+        return attendees;
     }
+
 
     @Override
     public Attendee addAttendee(AttendeeRequest attendeeRequest) {
@@ -64,7 +82,6 @@ public class AttendeeServiceImpl implements AttendeeService {
         if (existingEmailCount > 0) {
             throw new WrongInputException("Email is already in use");
         }
-
         Attendee attendee = new Attendee();
         attendee.setAttendeeName(attendeeRequest.getAttendeeName());
         attendee.setEmail(trimmedEmail);
