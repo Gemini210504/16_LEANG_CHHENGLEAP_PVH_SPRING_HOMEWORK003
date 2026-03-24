@@ -73,6 +73,12 @@
             <artifactId>mapstruct</artifactId>
             <version>1.6.3</version>
         </dependency>
+        <!--for .env support-->
+        <dependency>
+		    <groupId>me.paulschwarz</groupId>
+		    <artifactId>spring-dotenv</artifactId>
+		    <version>4.0.0</version>
+		</dependency>
 
         <!-- MapStruct Processor -->
         <dependency>
